@@ -1,15 +1,18 @@
 // App.js
-// Purpose: Main application component that renders the FileUpload component.
+// Purpose: Main app that renders the FileUpload component in a clean layout.
 
 import React from 'react';
+import { Container, Typography } from '@mui/material';
 import FileUpload from './FileUpload';
 
 function App() {
   return (
-    <div style={{ margin: '20px' }}>
-      <h1>File Upload Demo</h1>
+    <Container maxWidth="sm" style={{ textAlign: 'center', marginTop: '50px' }}>
+      <Typography variant="h4" gutterBottom>
+        Upload File
+      </Typography>
       <FileUpload />
-    </div>
+    </Container>
   );
 }
 
