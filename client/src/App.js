@@ -1,23 +1,14 @@
-import logo from './logo.svg';
-import './App.css';
+// App.js
+// Purpose: Main application component that renders the FileUpload component.
+
+import React from 'react';
 import FileUpload from './FileUpload';
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ margin: '20px' }}>
+      <h1>File Upload Demo</h1>
+      <FileUpload />
     </div>
   );
 }
