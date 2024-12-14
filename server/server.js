@@ -69,7 +69,7 @@ app.get('/:branch', (req, res) => { //frontend should have a request including t
             });
              */
 
-            res.json(results);}
+            res.json(/* the variable containing the new iterated data from the SQL database*/ );} 
     });
 });
 
