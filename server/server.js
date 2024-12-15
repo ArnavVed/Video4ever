@@ -1,20 +1,16 @@
-// MORE CHANGES MAY BE IMPLEMENTED
+// Server.js
 const express = require("express");
 const path = require("path");
+const cors = require("cors");
 const app = express();
+const mysql = require('mysql');
 
+// Middleware setup
 app.use(cors());
 app.use(express.json());
 
+// Static file serving for the React build (if you do a production build)
 app.use(express.static(path.join(__dirname, "../client/build")));
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`);
-});
-
-
-const mysql = require('mysql');
-
 
 // Create a connection to the database
 const db = mysql.createConnection({
@@ -33,46 +29,40 @@ db.connect((err) => {
     console.log('Connected to the MySQL database.');
 });
 
-
-// result get method for each branch selected. Frontend should be able to choose between 4 branches
-// needs to be displayed
-app.get('/:branch', (req, res) => { //frontend should have a request including the branch number in order for this to work
+// API endpoint to retrieve inventory for a selected branch
+app.get('/:branch', (req, res) => {
     const branch = req.params.branch;
-    const query = `SELECT DISTINCT movie.Title, movie.Price, dir.DirectorFirst, dir.DirectorLast, inv.OnHand 
-    FROM Movie as movie
-    INNER JOIN Directed as direct
-    ON movie.MovieCode = direct.MovieCode
-    INNER JOIN Director as dir
-    ON direct.DirectorID = dir.DirectorID
-    INNER JOIN Inventory as inv
-    ON inv.MovieCode = movie.MovieCode
-    INNER JOIN Branch AS branch
-    ON branch.BranchNum = inv.BranchNum
-    WHERE branch.BranchNum = ? 
-    ORDER BY movie.Title ASC;
+    const query = `
+        SELECT DISTINCT movie.Title, movie.Price, dir.DirectorFirst, dir.DirectorLast, inv.OnHand 
+        FROM Movie as movie
+        INNER JOIN Directed as direct ON movie.MovieCode = direct.MovieCode
+        INNER JOIN Director as dir ON direct.DirectorID = dir.DirectorID
+        INNER JOIN Inventory as inv ON inv.MovieCode = movie.MovieCode
+        INNER JOIN Branch AS br ON br.BranchNum = inv.BranchNum
+        WHERE br.BranchNum = ? 
+        ORDER BY movie.Title ASC;
     `;
-    // ? will make the branch number flexible to use in one method
 
-    db.query(query, [branch], (error, results) => { // supposed to loop thru collected data and convert it to json
+    db.query(query, [branch], (error, results) => {
         if(error){
             console.error(error.message);
             res.status(500).send('Error retrieving data');
         }
         else{ 
-            // have the query iterate thru the database results using the map method
-
             const transformedResults = results.map((movie) => {
                 return {
                     Title: movie.Title,
-                    Price: `$${movie.Price.toFixed(2)}`,  // Format price as currency
-                    Director: `${movie.DirectorFirst} ${movie.DirectorLast}`,  // Combine director names
-                    OnHand: movie.OnHand  // Movies on hand
+                    Price: `$${movie.Price.toFixed(2)}`,
+                    Director: `${movie.DirectorFirst} ${movie.DirectorLast}`,
+                    OnHand: movie.OnHand
                 };
             });
-
             res.json(transformedResults);
         } 
     });
 });
 
-
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`);
+});
