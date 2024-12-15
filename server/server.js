@@ -38,10 +38,12 @@ db.connect((err) => {
 // needs to be displayed
 app.get('/:branch', (req, res) => { //frontend should have a request including the branch number in order for this to work
     const branch = req.params.branch;
-    const query = `SELECT DISTINCT movie.Title, movie.Price, dir.DirectorFirst, dir.DirectorLast 
-    FROM Director as dir
+    const query = `SELECT DISTINCT movie.Title, movie.Price, dir.DirectorFirst, dir.DirectorLast, inv.OnHand 
+    FROM Movie as movie
     INNER JOIN Directed as direct
     ON movie.MovieCode = direct.MovieCode
+    INNER JOIN Director as dir
+    ON direct.DirectorID = dir.DirectorID
     INNER JOIN Inventory as inv
     ON inv.MovieCode = movie.MovieCode
     INNER JOIN Branch AS branch
@@ -59,20 +61,17 @@ app.get('/:branch', (req, res) => { //frontend should have a request including t
         else{ 
             // have the query iterate thru the database results using the map method
 
-            /**
-             * for example:
-             *  // Use map to transform data
             const transformedResults = results.map((movie) => {
-                // Example transformation: Format the movie title and price
                 return {
-                    Title: movie.Title.toUpperCase(),  // Transform the title to uppercase
+                    Title: movie.Title,
                     Price: `$${movie.Price.toFixed(2)}`,  // Format price as currency
                     Director: `${movie.DirectorFirst} ${movie.DirectorLast}`,  // Combine director names
+                    OnHand: movie.OnHand  // Movies on hand
                 };
             });
-             */
 
-            res.json(/* the variable containing the new iterated data from the SQL database*/ );} 
+            res.json(transformedResults);
+        } 
     });
 });
 
