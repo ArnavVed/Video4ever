@@ -12,7 +12,9 @@ app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
 });
 
+
 const mysql = require('mysql');
+
 
 // Create a connection to the database
 const db = mysql.createConnection({
@@ -30,6 +32,7 @@ db.connect((err) => {
     }
     console.log('Connected to the MySQL database.');
 });
+
 
 // result get method for each branch selected. Frontend should be able to choose between 4 branches
 // needs to be displayed
@@ -72,4 +75,5 @@ app.get('/:branch', (req, res) => { //frontend should have a request including t
             res.json(/* the variable containing the new iterated data from the SQL database*/ );} 
     });
 });
+
 
