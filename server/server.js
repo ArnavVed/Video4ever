@@ -30,21 +30,22 @@ db.connect((err) => {
 });
 
 // API endpoint to retrieve inventory for a selected branch
-app.get('/:branch', (req, res) => {
-    const branch = req.params.branch;
-    const query = `SELECT DISTINCT movie.Title, movie.Price,
-    dir.DirectorFirst, dir.DirectorLast, inv.OnHand 
-    FROM Movie as movie
-    INNER JOIN Directed as direct
-    ON movie.MovieCode = direct.MovieCode
-    INNER JOIN Director as dir
-    ON direct.DirectorID = dir.DirectorID
-    INNER JOIN Inventory as inv
-    ON inv.MovieCode = movie.MovieCode
-    INNER JOIN Branch AS branch
-    ON branch.BranchNum = inv.BranchNum
-    WHERE branch.BranchNum = ? 
-    ORDER BY movie.Title ASC;
+app.get('/:id', (req, res) => {
+    const branch = req.params.id;
+    const query = `SELECT DISTINCT 
+    movie.Title, 
+    movie.Price, 
+    dir.DirectorFirst, 
+    dir.DirectorLast, 
+    inv.OnHand
+   
+FROM Director AS dir
+INNER JOIN Directed AS direct ON dir.DirectorNum = direct.DirectorNum
+INNER JOIN Movie AS movie ON movie.MovieCode = direct.MovieCode
+INNER JOIN Inventory AS inv ON inv.MovieCode = movie.MovieCode
+INNER JOIN Branch AS branch ON branch.BranchNum = inv.BranchNum
+WHERE branch.BranchNum = ?
+ORDER BY movie.Title ASC
     ;`;
 
     db.query(query, [branch], (error, results) => {
@@ -66,7 +67,7 @@ app.get('/:branch', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
 });

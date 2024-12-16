@@ -13,7 +13,7 @@ function App() {
       return;
     }
     setError('');
-    fetch(`http://localhost:8080/${branch}`) // Adjust if your server runs elsewhere
+    fetch(`http://localhost:3000/${branch}`) // Adjust if your server runs elsewhere
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok.');
