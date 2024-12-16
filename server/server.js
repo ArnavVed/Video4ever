@@ -16,8 +16,8 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 const db = mysql.createConnection({
     host: 'ec2-3-219-93-177.compute-1.amazonaws.com',
     user: 'video',
-    password: 'video4Ever',
-    database: 'Video4Ever'
+    password: 'video4Ever!',
+    database: 'nchs_video'
 });
 
 // Connect to the database
@@ -32,16 +32,20 @@ db.connect((err) => {
 // API endpoint to retrieve inventory for a selected branch
 app.get('/:branch', (req, res) => {
     const branch = req.params.branch;
-    const query = `
-        SELECT DISTINCT movie.Title, movie.Price, dir.DirectorFirst, dir.DirectorLast, inv.OnHand 
-        FROM Movie as movie
-        INNER JOIN Directed as direct ON movie.MovieCode = direct.MovieCode
-        INNER JOIN Director as dir ON direct.DirectorID = dir.DirectorID
-        INNER JOIN Inventory as inv ON inv.MovieCode = movie.MovieCode
-        INNER JOIN Branch AS br ON br.BranchNum = inv.BranchNum
-        WHERE br.BranchNum = ? 
-        ORDER BY movie.Title ASC;
-    `;
+    const query = `SELECT DISTINCT movie.Title, movie.Price,
+    dir.DirectorFirst, dir.DirectorLast, inv.OnHand 
+    FROM Movie as movie
+    INNER JOIN Directed as direct
+    ON movie.MovieCode = direct.MovieCode
+    INNER JOIN Director as dir
+    ON direct.DirectorID = dir.DirectorID
+    INNER JOIN Inventory as inv
+    ON inv.MovieCode = movie.MovieCode
+    INNER JOIN Branch AS branch
+    ON branch.BranchNum = inv.BranchNum
+    WHERE branch.BranchNum = ? 
+    ORDER BY movie.Title ASC;
+    ;`;
 
     db.query(query, [branch], (error, results) => {
         if(error){
